@@ -42,41 +42,38 @@ class Solution:
           nums.append(root.val)
         nums.extend(self.bfs(root.right))
         return nums
-    
-    def middle_search(self, nums, left, right, target):
-        if left == right:
-            val = nums[left]
-            if target < val:
-              if left == 0:
-                return [-1, val]
-              else:
-                return [nums[left-1], val]
-            else:
-              if right == len(nums) - 1: 
-                return [val, -1]
-              else:
-                return [val,nums[right+1]]
-        mid_index = (left + right) // 2
-        mid_val = nums[mid_index]
-        if target == mid_val:
-            return [target, target]
-        elif target < mid_val:
-            return self.middle_search(nums,left,mid_index-1,target)
-        else:
-            return self.middle_search(nums,mid_index+1,right,target)
+
             
         
     def closestNodes(self, root: Optional[TreeNode], queries: List[int]) -> List[List[int]]:
-        tree_root = self.build_tree_from_array(root)
-        nums = self.bfs(tree_root)
+        root = self.build_tree_from_array(root)
+        nums = self.bfs(root)
         res = []
         for q in queries:
-            res.append(self.middle_search(nums,0, len(nums)-1, q))
+            if q < nums[0]:
+                res.append([-1, nums[0]])
+                break
+            if q >= nums[-1]:
+                res.append([nums[-1],-1])
+                break
+            l, r = 0, len(nums) - 1
+            while (r - l ) > 1:
+                mid_index = (l + r) // 2
+                mid_val = nums[mid_index]
+                if mid_val == q:
+                    res.append([q,q])
+                    break
+                elif q < mid_val:
+                    r = mid_index
+                else:
+                    l = mid_index
+            if (r-l) == 1:
+                res.append([nums[l], nums[r]])
         return res
 
 null = None
-nums = [6,2,13,1,4,9,15,null,null,null,null,null,null,14]
-queries = [2,5,16]
+nums = [16,8,18,1,12,null,20,null,2,9,null,null,null,null,7]
+queries = [8,14,285508,6]
 s = Solution()
 res = s.closestNodes(nums,queries = [2,5,16])
 print(res)
